@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { LoginPage, RegisterPage } from './pages/Auth';
+import { LoginPage, RegisterPage, VerifyEmailPage } from './pages/Auth';
 import { DashboardPage } from './pages/Dashboard';
 import { ComplaintsPage } from './pages/Complaints';
 import { NewComplaintPage } from './pages/NewComplaint';
@@ -10,7 +10,6 @@ import { AdminComplaints } from './pages/AdminComplaints';
 import { AdminUsers } from './pages/AdminUsers';
 import { Spinner } from './components/UI';
 
-// Route guards
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner size={40} /></div>;
@@ -37,6 +36,7 @@ const AppRoutes = () => (
     {/* Public */}
     <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
     <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+    <Route path="/verify-email" element={<VerifyEmailPage />} />
 
     {/* Commercial */}
     <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
@@ -64,14 +64,15 @@ export default function App() {
           position="top-right"
           toastOptions={{
             style: {
-              background: '#1e293b',
-              color: '#f1f5f9',
-              border: '1px solid #334155',
+              background: '#ffffff',
+              color: '#1e293b',
+              border: '1px solid #e2e8f0',
               borderRadius: '12px',
               fontSize: '14px',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.07)',
             },
-            success: { iconTheme: { primary: '#10b981', secondary: '#1e293b' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#1e293b' } },
+            success: { iconTheme: { primary: '#10b981', secondary: '#ffffff' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
           }}
         />
       </AuthProvider>

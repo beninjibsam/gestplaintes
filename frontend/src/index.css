@@ -18,31 +18,31 @@
     @apply bg-white border border-slate-200 rounded-2xl;
   }
   .card-glass {
-    @apply bg-white/90 backdrop-blur-xl border border-slate-200 rounded-2xl;
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm;
   }
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600
+    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800
            text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200
-           shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.02]
-           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100;
+           shadow-sm hover:shadow hover:scale-[1.01]
+           active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100;
   }
   .btn-danger {
-    @apply bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600
-           text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200
-           shadow-lg shadow-red-200;
+    @apply bg-red-600 hover:bg-red-700
+           text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm;
   }
   .btn-ghost {
     @apply bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900
-           font-medium px-5 py-2.5 rounded-xl transition-all duration-200 border border-slate-300;
+           font-medium px-5 py-2.5 rounded-xl transition-all duration-200
+           border border-slate-200 hover:border-slate-300;
   }
   .input-field {
     @apply w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800
-           placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40
+           placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30
            focus:border-blue-400 transition-all duration-200;
   }
   .select-field {
     @apply w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800
-           focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400
+           focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400
            transition-all duration-200 appearance-none cursor-pointer;
   }
   .label {
@@ -53,10 +53,9 @@
   }
 }
 
-/* Animated gradient border */
 .gradient-border {
   position: relative;
-  background: linear-gradient(to right, #1e40af, #dc2626);
+  background: linear-gradient(to right, #2563eb, #dc2626);
   padding: 1px;
   border-radius: 1rem;
 }
@@ -65,20 +64,14 @@
   border-radius: calc(1rem - 1px);
 }
 
-/* Status badge animations */
-.status-badge-pulse {
-  animation: pulseDot 2s infinite;
-}
+.status-badge-pulse { animation: pulseDot 2s infinite; }
 
 @keyframes pulseDot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 
-/* Page transitions */
-.page-enter {
-  animation: slideIn 0.25s ease-out;
-}
+.page-enter { animation: slideIn 0.25s ease-out; }
 
 @keyframes slideIn {
   from { transform: translateY(12px); opacity: 0; }

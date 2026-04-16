@@ -16,8 +16,8 @@ const AuthLayout = ({ children, title, subtitle }) => (
     <div className="relative w-full max-w-md">
       {/* Logo */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-red-600 shadow-2xl shadow-blue-900/40 mb-4">
-          <AlertTriangle size={28} className="text-white" />
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
+          <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain" />
         </div>
         <h1 className="text-2xl font-bold text-white">{title}</h1>
         <p className="text-slate-400 mt-1 text-sm">{subtitle}</p>
@@ -55,7 +55,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <AuthLayout title="Connexion" subtitle="Accédez à votre espace de gestion">
+    <AuthLayout title="CORIS ASSURANCES Vie BF" subtitle="Application de gestion des plaintes des commerciaux">
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
           <div className="flex items-center gap-2 p-3 bg-red-900/30 border border-red-700/50 rounded-xl text-red-300 text-sm">

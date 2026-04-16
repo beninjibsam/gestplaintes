@@ -41,12 +41,12 @@ export const Sidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-slate-800/60">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-red-600 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle size={18} className="text-white" />
+          <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+            <img src="/logo.png" alt="Logo" className="w-9 h-9 object-contain" />
           </div>
           <div>
             <div className="text-sm font-bold text-white">GestPlaintes</div>
-            <div className="text-xs text-slate-500">Plateforme interne</div>
+            <div className="text-xs text-slate-500">Coris Assurances Vie BF</div>
           </div>
         </div>
       </div>

@@ -31,7 +31,7 @@ export const SERVICES = [
   'Service Ressources humaines',
   'Service Audit Interne',
   'Service Moyens Généraux',
-  'Autre',
+  'Autres',
 ];
 
 export const TYPES_PLAINTE = [

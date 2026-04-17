@@ -237,14 +237,14 @@ export const NewComplaintPage = () => {
                   </div>
                 </div>
 
-                <SelectField label="Impact métier"
+                <SelectField label="Impact "
                   value={form.impact_metier} onChange={e => set('impact_metier', e.target.value)}>
                   <option value="">-- Sélectionner l'impact --</option>
                   {IMPACTS_METIER.map(i => <option key={i} value={i}>{i}</option>)}
                 </SelectField>
 
                 <div>
-                  <label className="label">Niveau de priorité <span className="text-red-500">*</span></label>
+                  <label className="label">Priorité <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-2 gap-3">
                     {PRIORITES.map(p => (
                       <button key={p.value} type="button"
@@ -283,7 +283,7 @@ export const NewComplaintPage = () => {
                 />
 
                 <InputField label="Référence métier (numéro de police, dossier, client...)" icon={Hash}
-                  placeholder="Ex: POL-2026-12345"
+                  placeholder="Ex: Police N°246000001"
                   value={form.reference_metier} onChange={e => set('reference_metier', e.target.value)}
                 />
 
@@ -293,7 +293,7 @@ export const NewComplaintPage = () => {
                   <div className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-colors duration-200
                     ${file ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
                     <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
-                      accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xlsx,.txt"
+                      accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xlsx,.txt,.mp3,.mp4,.wav,.ogg,.webm,.mov,.avi"
                       onChange={e => setFile(e.target.files[0])} />
                     {file ? (
                       <div className="flex items-center justify-center gap-2 text-blue-600">
@@ -308,7 +308,7 @@ export const NewComplaintPage = () => {
                       <>
                         <Paperclip size={24} className="mx-auto text-slate-300 mb-2" />
                         <p className="text-sm text-slate-500">Glissez un fichier ou cliquez pour sélectionner</p>
-                        <p className="text-xs text-slate-400 mt-1">PDF, images, documents — max 5 Mo</p>
+                        <p className="text-xs text-slate-400 mt-1">PDF, images, audio, vidéo — max 20 Mo</p>
                       </>
                     )}
                   </div>

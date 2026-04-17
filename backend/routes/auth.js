@@ -6,30 +6,37 @@ const pool = require('../models/db');
 const { sendVerificationEmail, notifyAdminsNewUser } = require('../middleware/mailer');
 const router = express.Router();
 
-// POST /api/auth/register — auto-enrôlement avec vérification email
+// POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { email, password, full_name } = req.body;
+  const { email, password, full_name, whatsapp, telephone } = req.body;
+
   if (!email || !password || !full_name) {
     return res.status(400).json({ error: 'Champs obligatoires manquants' });
+  }
+  if (!whatsapp || whatsapp.trim().length < 8) {
+    return res.status(400).json({ error: 'Le numéro WhatsApp est obligatoire (minimum 8 chiffres)' });
   }
   if (password.length < 8) {
     return res.status(400).json({ error: 'Le mot de passe doit faire au moins 8 caractères' });
   }
+
   try {
     const exists = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
     if (exists.rows.length > 0) {
       return res.status(409).json({ error: 'Cet email est déjà enregistré' });
     }
+
     const hash = await bcrypt.hash(password, 10);
     const verifyToken = crypto.randomBytes(32).toString('hex');
 
     await pool.query(
-      `INSERT INTO users (email, password_hash, full_name, role, is_active, email_verified, email_verify_token, pending_approval)
-       VALUES ($1, $2, $3, 'commercial', false, false, $4, true)`,
-      [email.toLowerCase(), hash, full_name, verifyToken]
+      `INSERT INTO users
+         (email, password_hash, full_name, whatsapp, telephone,
+          role, is_active, email_verified, email_verify_token, pending_approval)
+       VALUES ($1, $2, $3, $4, $5, 'commercial', false, false, $6, true)`,
+      [email.toLowerCase(), hash, full_name, whatsapp.trim(), telephone?.trim() || null, verifyToken]
     );
 
-    // Envoyer email de vérification
     await sendVerificationEmail(email.toLowerCase(), full_name, verifyToken);
 
     res.status(201).json({
@@ -56,13 +63,11 @@ router.get('/verify-email', async (req, res) => {
     }
     const user = result.rows[0];
 
-    // Marquer email comme vérifié
     await pool.query(
       'UPDATE users SET email_verified = true, email_verify_token = NULL WHERE id = $1',
       [user.id]
     );
 
-    // Notifier tous les admins
     const admins = await pool.query(
       "SELECT email FROM users WHERE role = 'admin' AND is_active = true"
     );
@@ -83,10 +88,7 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Email et mot de passe requis' });
   }
   try {
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email.toLowerCase()]
-    );
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase()]);
     const user = result.rows[0];
 
     if (!user || !(await bcrypt.compare(password, user.password_hash))) {

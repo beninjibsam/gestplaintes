@@ -40,7 +40,7 @@ export const Sidebar = () => {
     <aside className="w-64 min-h-screen bg-white border-r border-slate-200 flex flex-col">
       {/* Logo */}
       <div className="px-5 py-4 border-b border-slate-200">
-        <img src="/logo.png" alt="Coris Assurances" className="h-10 w-auto object-contain" />
+        <img src="https://coris-assurances.com/wp-content/uploads/2023/03/Fichier-1@2x.png" alt="Coris Assurances" className="h-10 w-auto object-contain" />
       </div>
 
       {/* User info */}

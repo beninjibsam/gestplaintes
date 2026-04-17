@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, Building2, Tag, FileText, AlignLeft, Zap,
-  Calendar, Paperclip, Hash, ChevronRight, CheckCircle, Loader,
-  TrendingDown, X
+  Calendar, Paperclip, Hash, ChevronRight, CheckCircle, Loader, X
 } from 'lucide-react';
 import { Sidebar, Header } from '../components/Layout';
 import { SelectField, InputField, TextareaField, Alert } from '../components/UI';
@@ -12,10 +11,10 @@ import api from '../api';
 import toast from 'react-hot-toast';
 
 const STEPS = [
-  { id: 1, label: 'Identification',  icon: Building2 },
-  { id: 2, label: 'Description',     icon: AlignLeft },
+  { id: 1, label: 'Identification',    icon: Building2 },
+  { id: 2, label: 'Description',       icon: AlignLeft },
   { id: 3, label: 'Impact & Priorité', icon: Zap },
-  { id: 4, label: 'Détails',         icon: Hash },
+  { id: 4, label: 'Détails',           icon: Hash },
 ];
 
 export const NewComplaintPage = () => {
@@ -24,6 +23,7 @@ export const NewComplaintPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
+  const [typePlainterAutre, setTypePlainteAutre] = useState('');
   const [form, setForm] = useState({
     service_concerne: '',
     type_plainte: '',
@@ -37,10 +37,25 @@ export const NewComplaintPage = () => {
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
+  const handleTypeChange = (val) => {
+    set('type_plainte', val);
+    if (val !== 'Autre') setTypePlainteAutre('');
+  };
+
+  // La valeur finale envoyée : si Autre → utiliser la saisie libre
+  const typePlainteFinal = form.type_plainte === 'Autre'
+    ? (typePlainterAutre.trim() || 'Autre')
+    : form.type_plainte;
+
   const canNext = () => {
-    if (step === 1) return form.service_concerne && form.type_plainte;
+    if (step === 1) {
+      const typeOk = form.type_plainte === 'Autre'
+        ? typePlainterAutre.trim().length >= 2
+        : !!form.type_plainte;
+      return !!form.service_concerne && typeOk;
+    }
     if (step === 2) return form.objet.trim().length >= 5 && form.description.trim().length >= 20;
-    if (step === 3) return form.priorite;
+    if (step === 3) return !!form.priorite;
     return true;
   };
 
@@ -49,7 +64,8 @@ export const NewComplaintPage = () => {
     setError('');
     try {
       const data = new FormData();
-      Object.entries(form).forEach(([k, v]) => { if (v) data.append(k, v); });
+      const payload = { ...form, type_plainte: typePlainteFinal };
+      Object.entries(payload).forEach(([k, v]) => { if (v) data.append(k, v); });
       if (file) data.append('piece_jointe', file);
       await api.post('/complaints', data, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Plainte soumise avec succès !');
@@ -62,7 +78,7 @@ export const NewComplaintPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
       <main className="flex-1 p-8 page-enter">
         <Header
@@ -86,16 +102,18 @@ export const NewComplaintPage = () => {
                 <button
                   onClick={() => done && setStep(s.id)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                    ${active ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' :
-                      done ? 'bg-emerald-900/40 text-emerald-400 cursor-pointer hover:bg-emerald-900/60' :
-                      'bg-slate-800 text-slate-500 cursor-default'}`}
+                    ${active
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : done
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer hover:bg-emerald-100'
+                        : 'bg-white text-slate-400 border border-slate-200 cursor-default'}`}
                 >
                   {done ? <CheckCircle size={15} /> : <Icon size={15} />}
                   <span className="hidden sm:inline">{s.label}</span>
                   <span className="sm:hidden">{s.id}</span>
                 </button>
                 {i < STEPS.length - 1 && (
-                  <ChevronRight size={14} className={`${step > s.id ? 'text-emerald-400' : 'text-slate-700'}`} />
+                  <ChevronRight size={14} className={step > s.id ? 'text-emerald-400' : 'text-slate-300'} />
                 )}
               </div>
             );
@@ -110,11 +128,11 @@ export const NewComplaintPage = () => {
             {step === 1 && (
               <div className="space-y-5 animate-fade-in">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-900/40 flex items-center justify-center">
-                    <Building2 size={16} className="text-blue-400" />
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Building2 size={16} className="text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Service concerné</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">Service concerné</h2>
                     <p className="text-xs text-slate-400">Quel service est à l'origine du problème ?</p>
                   </div>
                 </div>
@@ -125,21 +143,46 @@ export const NewComplaintPage = () => {
                   {SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
                 </SelectField>
 
-                <SelectField label="Type de plainte" required
-                  value={form.type_plainte} onChange={e => set('type_plainte', e.target.value)}>
-                  <option value="">-- Catégorie du problème --</option>
-                  {TYPES_PLAINTE.map(t => <option key={t} value={t}>{t}</option>)}
-                </SelectField>
+                <div>
+                  <SelectField label="Type de plainte" required
+                    value={form.type_plainte} onChange={e => handleTypeChange(e.target.value)}>
+                    <option value="">-- Catégorie du problème --</option>
+                    {TYPES_PLAINTE.map(t => <option key={t} value={t}>{t}</option>)}
+                  </SelectField>
 
-                {/* Visual service cards */}
+                  {/* Champ libre — apparaît uniquement si "Autre" est sélectionné */}
+                  {form.type_plainte === 'Autre' && (
+                    <div className="mt-3 animate-fade-in">
+                      <label className="label">Précisez le type de plainte <span className="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        placeholder="Décrivez le type de plainte..."
+                        value={typePlainterAutre}
+                        onChange={e => setTypePlainteAutre(e.target.value)}
+                        autoFocus
+                        maxLength={100}
+                      />
+                      {typePlainterAutre.length > 0 && typePlainterAutre.trim().length < 2 && (
+                        <p className="text-xs text-red-500 mt-1">Minimum 2 caractères</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Récap visuel service sélectionné */}
                 {form.service_concerne && (
-                  <div className="p-4 bg-blue-900/20 border border-blue-800/40 rounded-xl flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
-                      <Building2 size={18} className="text-blue-400" />
+                  <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <Building2 size={18} className="text-blue-600" />
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-blue-300">{form.service_concerne}</div>
-                      <div className="text-xs text-slate-500">{form.type_plainte || 'Sélectionnez un type'}</div>
+                      <div className="text-sm font-semibold text-blue-700">{form.service_concerne}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {form.type_plainte === 'Autre' && typePlainterAutre
+                          ? typePlainterAutre
+                          : form.type_plainte || 'Sélectionnez un type'}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -150,11 +193,11 @@ export const NewComplaintPage = () => {
             {step === 2 && (
               <div className="space-y-5 animate-fade-in">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-purple-900/40 flex items-center justify-center">
-                    <AlignLeft size={16} className="text-purple-400" />
+                  <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <AlignLeft size={16} className="text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Description du problème</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">Description du problème</h2>
                     <p className="text-xs text-slate-400">Soyez précis pour faciliter le traitement</p>
                   </div>
                 </div>
@@ -164,14 +207,18 @@ export const NewComplaintPage = () => {
                   value={form.objet} onChange={e => set('objet', e.target.value)}
                   maxLength={255}
                 />
-                <div className="text-right text-xs text-slate-500">{form.objet.length}/255</div>
+                <div className="text-right text-xs text-slate-400">{form.objet.length}/255</div>
 
                 <TextareaField label="Description détaillée" required rows={6}
                   placeholder="Décrivez le contexte, les faits, les impacts constatés...&#10;&#10;Soyez aussi précis que possible : dates, personnes impliquées, tentatives de résolution déjà effectuées..."
                   value={form.description} onChange={e => set('description', e.target.value)}
                 />
-                <div className="flex justify-between text-xs text-slate-500">
-                  <span>{form.description.length < 20 ? `Encore ${20 - form.description.length} caractères min.` : '✓ Description suffisante'}</span>
+                <div className="flex justify-between text-xs text-slate-400">
+                  <span className={form.description.length >= 20 ? 'text-emerald-600 font-medium' : ''}>
+                    {form.description.length < 20
+                      ? `Encore ${20 - form.description.length} caractères min.`
+                      : '✓ Description suffisante'}
+                  </span>
                   <span>{form.description.length} caractères</span>
                 </div>
               </div>
@@ -181,34 +228,35 @@ export const NewComplaintPage = () => {
             {step === 3 && (
               <div className="space-y-5 animate-fade-in">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-red-900/40 flex items-center justify-center">
-                    <Zap size={16} className="text-red-400" />
+                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                    <Zap size={16} className="text-red-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Impact et urgence</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">Impact et urgence</h2>
                     <p className="text-xs text-slate-400">Ces informations guident la priorisation du traitement</p>
                   </div>
                 </div>
 
-                <SelectField label="Impact métier" value={form.impact_metier} onChange={e => set('impact_metier', e.target.value)}>
+                <SelectField label="Impact métier"
+                  value={form.impact_metier} onChange={e => set('impact_metier', e.target.value)}>
                   <option value="">-- Sélectionner l'impact --</option>
                   {IMPACTS_METIER.map(i => <option key={i} value={i}>{i}</option>)}
                 </SelectField>
 
                 <div>
-                  <label className="label">Niveau de priorité <span className="text-red-400">*</span></label>
+                  <label className="label">Niveau de priorité <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-2 gap-3">
                     {PRIORITES.map(p => (
                       <button key={p.value} type="button"
                         onClick={() => set('priorite', p.value)}
                         className={`p-3 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center gap-2
                           ${form.priorite === p.value
-                            ? 'border-blue-500 bg-blue-900/30 text-blue-300'
-                            : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'}`}
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'}`}
                       >
                         <span className="text-base">{p.icon}</span>
                         {p.value}
-                        {form.priorite === p.value && <CheckCircle size={14} className="ml-auto text-blue-400" />}
+                        {form.priorite === p.value && <CheckCircle size={14} className="ml-auto text-blue-500" />}
                       </button>
                     ))}
                   </div>
@@ -220,11 +268,11 @@ export const NewComplaintPage = () => {
             {step === 4 && (
               <div className="space-y-5 animate-fade-in">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-900/40 flex items-center justify-center">
-                    <Hash size={16} className="text-amber-400" />
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                    <Hash size={16} className="text-amber-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Informations complémentaires</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">Informations complémentaires</h2>
                     <p className="text-xs text-slate-400">Optionnel — facilitent le traitement</p>
                   </div>
                 </div>
@@ -239,60 +287,61 @@ export const NewComplaintPage = () => {
                   value={form.reference_metier} onChange={e => set('reference_metier', e.target.value)}
                 />
 
+                {/* Zone pièce jointe */}
                 <div>
                   <label className="label">Pièce jointe (capture, mail, document)</label>
                   <div className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-colors duration-200
-                    ${file ? 'border-blue-500/50 bg-blue-900/10' : 'border-slate-700 hover:border-slate-600'}`}>
+                    ${file ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
                     <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xlsx,.txt"
                       onChange={e => setFile(e.target.files[0])} />
                     {file ? (
-                      <div className="flex items-center justify-center gap-2 text-blue-400">
+                      <div className="flex items-center justify-center gap-2 text-blue-600">
                         <Paperclip size={18} />
                         <span className="text-sm font-medium">{file.name}</span>
                         <button type="button" onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                          className="ml-2 text-slate-400 hover:text-red-400 transition-colors">
+                          className="ml-2 text-slate-400 hover:text-red-500 transition-colors">
                           <X size={16} />
                         </button>
                       </div>
                     ) : (
                       <>
-                        <Paperclip size={24} className="mx-auto text-slate-600 mb-2" />
-                        <p className="text-sm text-slate-400">Glissez un fichier ou cliquez pour sélectionner</p>
-                        <p className="text-xs text-slate-600 mt-1">PDF, images, documents — max 5 Mo</p>
+                        <Paperclip size={24} className="mx-auto text-slate-300 mb-2" />
+                        <p className="text-sm text-slate-500">Glissez un fichier ou cliquez pour sélectionner</p>
+                        <p className="text-xs text-slate-400 mt-1">PDF, images, documents — max 5 Mo</p>
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Summary */}
-                <div className="bg-slate-800/60 rounded-xl p-4 space-y-2 border border-slate-700/50">
+                {/* Récapitulatif */}
+                <div className="bg-slate-50 rounded-xl p-4 space-y-2.5 border border-slate-200">
                   <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Récapitulatif</p>
                   {[
-                    ['Service', form.service_concerne],
-                    ['Type', form.type_plainte],
-                    ['Objet', form.objet],
+                    ['Service',  form.service_concerne],
+                    ['Type',     typePlainteFinal],
+                    ['Objet',    form.objet],
                     ['Priorité', form.priorite],
-                    ['Impact', form.impact_metier || 'Non renseigné'],
+                    ['Impact',   form.impact_metier || 'Non renseigné'],
                   ].map(([k, v]) => (
                     <div key={k} className="flex justify-between text-sm">
-                      <span className="text-slate-500">{k}</span>
-                      <span className="text-slate-300 font-medium max-w-[60%] text-right truncate">{v}</span>
+                      <span className="text-slate-400 font-medium">{k}</span>
+                      <span className="text-slate-700 font-semibold max-w-[60%] text-right truncate">{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Navigation buttons */}
-            <div className="flex justify-between pt-4 border-t border-slate-800">
+            {/* Navigation */}
+            <div className="flex justify-between pt-4 border-t border-slate-100">
               <button type="button" onClick={() => setStep(s => s - 1)} disabled={step === 1}
                 className="btn-ghost disabled:opacity-30">
                 ← Précédent
               </button>
               {step < 4 ? (
                 <button type="button" onClick={() => setStep(s => s + 1)} disabled={!canNext()}
-                  className="btn-primary flex items-center gap-2">
+                  className="btn-primary flex items-center gap-2 disabled:opacity-40">
                   Suivant <ChevronRight size={16} />
                 </button>
               ) : (

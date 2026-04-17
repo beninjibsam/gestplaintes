@@ -4,7 +4,6 @@ export const STATUTS = [
   { value: 'Affectée au service',    label: 'Affectée au service',    color: 'bg-indigo-900/60 text-indigo-300', dot: 'bg-indigo-400' },
   { value: 'En traitement',          label: 'En traitement',          color: 'bg-cyan-900/60 text-cyan-300',     dot: 'bg-cyan-400 animate-pulse' },
   { value: 'En attente d\'information', label: 'En attente d\'info',  color: 'bg-amber-900/60 text-amber-300',   dot: 'bg-amber-400' },
-  { value: 'Escaladée',              label: 'Escaladée',              color: 'bg-orange-900/60 text-orange-300', dot: 'bg-orange-400 animate-pulse' },
   { value: 'Résolue',                label: 'Résolue',                color: 'bg-emerald-900/60 text-emerald-300', dot: 'bg-emerald-400' },
   { value: 'Clôturée',               label: 'Clôturée',               color: 'bg-green-900/60 text-green-300',   dot: 'bg-green-500' },
   { value: 'Rejetée',                label: 'Rejetée',                color: 'bg-red-900/60 text-red-300',       dot: 'bg-red-500' },
@@ -18,14 +17,20 @@ export const PRIORITES = [
 ];
 
 export const SERVICES = [
-  'Comptabilité',
-  'Informatique (IT)',
   'Direction commerciale',
-  'Sinistres',
-  'Back-office',
-  'Ressources humaines',
-  'Juridique',
-  'Logistique',
+  'Service Bancassurance',
+  'Service Comptabilité',
+  'Service Trésorerie',
+  'Service Informatique (SII)',
+  'Service Actuariat et Réassurance',
+  'Service Souscription',
+  'Service Prestation',
+  'Service Encaissements',
+  'Direction des Finances et de la Comptabilité',
+  'Direction Technique',
+  'Service Ressources humaines',
+  'Service Audit Interne',
+  'Service Moyens Généraux',
   'Autre',
 ];
 

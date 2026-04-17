@@ -13,8 +13,8 @@ const AuthLayout = ({ children, title, subtitle }) => (
     </div>
     <div className="relative w-full max-w-md">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-          <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain" />
+        <div className="flex items-center justify-center mb-4">
+          <img src="/logo.png" alt="Coris Assurances" className="h-16 w-auto object-contain" />
         </div>
         <h1 className="text-2xl font-bold text-slate-800">{title}</h1>
         <p className="text-slate-500 mt-1 text-sm">{subtitle}</p>

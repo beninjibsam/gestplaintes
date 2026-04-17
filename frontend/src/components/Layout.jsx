@@ -39,16 +39,8 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 min-h-screen bg-white border-r border-slate-200 flex flex-col">
       {/* Logo */}
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
-            <img src="/logo.png" alt="Logo" className="w-9 h-9 object-contain" />
-          </div>
-          <div>
-            <div className="text-sm font-bold text-slate-800">GestPlaintes</div>
-            <div className="text-xs text-slate-400">Coris Assurances Vie BF</div>
-          </div>
-        </div>
+      <div className="px-5 py-4 border-b border-slate-200">
+        <img src="/logo.png" alt="Coris Assurances" className="h-10 w-auto object-contain" />
       </div>
 
       {/* User info */}

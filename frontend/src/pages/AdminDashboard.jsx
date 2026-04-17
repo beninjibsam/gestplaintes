@@ -62,7 +62,7 @@ export const AdminDashboard = () => {
       <main className="flex-1 p-8 page-enter overflow-y-auto">
         <Header
           title="Tableau de bord"
-          subtitle="Vue globale — pilotage des plaintes internes"
+          subtitle="Vue globale — pilotage des plaintes des commerciaux"
           actions={
             <button onClick={load} className="btn-ghost flex items-center gap-2">
               <RefreshCw size={15} /> Actualiser

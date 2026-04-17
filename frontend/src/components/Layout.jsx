@@ -72,7 +72,7 @@ export const Sidebar = () => {
           </>
         ) : (
           <>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">Espace commercial</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">Votre espace</p>
             <NavItem to="/dashboard" icon={LayoutDashboard} label="Tableau de bord" />
             <NavItem to="/complaints/new" icon={PlusCircle} label="Nouvelle plainte" />
             <NavItem to="/complaints" icon={FileText} label="Mes plaintes" />

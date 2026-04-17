@@ -240,7 +240,7 @@ export const RegisterPage = () => {
           <label className="label">Nom complet <span className="text-red-500">*</span></label>
           <div className="relative">
             <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <input type="text" required className="input-field pl-10" placeholder="Jean Dupont"
+            <input type="text" required className="input-field pl-10" placeholder="Votre nom"
               value={form.full_name} onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))} />
           </div>
         </div>

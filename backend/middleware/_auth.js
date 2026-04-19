@@ -23,7 +23,6 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-// Admin uniquement
 const requireAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
@@ -31,12 +30,4 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-// Admin OU Direction (peuvent modifier les plaintes, voir stats)
-const requireAdminOrDirection = (req, res, next) => {
-  if (!['admin', 'direction'].includes(req.user.role)) {
-    return res.status(403).json({ error: 'Accès non autorisé' });
-  }
-  next();
-};
-
-module.exports = { authenticate, requireAdmin, requireAdminOrDirection };
+module.exports = { authenticate, requireAdmin };

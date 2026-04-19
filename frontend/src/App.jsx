@@ -16,37 +16,52 @@ const PrivateRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" replace />;
 };
 
+// Admin uniquement (gestion users)
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner size={40} /></div>;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  if (user.role !== 'admin') return <Navigate to="/admin/dashboard" replace />;
+  return children;
+};
+
+// Admin OU Direction (dashboard, plaintes, stats)
+const AdminOrDirectionRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner size={40} /></div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!['admin', 'direction'].includes(user.role)) return <Navigate to="/dashboard" replace />;
   return children;
 };
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Spinner size={40} /></div>;
-  if (user) return <Navigate to={user.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace />;
+  if (user) {
+    if (user.role === 'commercial') return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/admin/dashboard" replace />;
+  }
   return children;
 };
 
 const AppRoutes = () => (
   <Routes>
     {/* Public */}
-    <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-    <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+    <Route path="/login"        element={<PublicRoute><LoginPage /></PublicRoute>} />
+    <Route path="/register"     element={<PublicRoute><RegisterPage /></PublicRoute>} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
 
     {/* Commercial */}
-    <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-    <Route path="/complaints" element={<PrivateRoute><ComplaintsPage /></PrivateRoute>} />
-    <Route path="/complaints/new" element={<PrivateRoute><NewComplaintPage /></PrivateRoute>} />
-    <Route path="/history" element={<PrivateRoute><ComplaintsPage /></PrivateRoute>} />
+    <Route path="/dashboard"       element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+    <Route path="/complaints"      element={<PrivateRoute><ComplaintsPage /></PrivateRoute>} />
+    <Route path="/complaints/new"  element={<PrivateRoute><NewComplaintPage /></PrivateRoute>} />
+    <Route path="/history"         element={<PrivateRoute><ComplaintsPage /></PrivateRoute>} />
 
-    {/* Admin */}
-    <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-    <Route path="/admin/complaints" element={<AdminRoute><AdminComplaints /></AdminRoute>} />
+    {/* Admin + Direction */}
+    <Route path="/admin/dashboard"  element={<AdminOrDirectionRoute><AdminDashboard /></AdminOrDirectionRoute>} />
+    <Route path="/admin/complaints" element={<AdminOrDirectionRoute><AdminComplaints /></AdminOrDirectionRoute>} />
+
+    {/* Admin uniquement */}
     <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
 
     {/* Default */}
@@ -72,7 +87,7 @@ export default function App() {
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.07)',
             },
             success: { iconTheme: { primary: '#10b981', secondary: '#ffffff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
+            error:   { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
           }}
         />
       </AuthProvider>
